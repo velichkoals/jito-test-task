@@ -1,0 +1,30 @@
+@import "../../variables";
+
+.race {
+  &__data {
+    margin: 3rem 0;
+    height: 200px;
+    width: 1000px;
+  }
+  &__winner {
+    font-weight: $bold;
+    font-size: $middle-size;
+  }
+
+  &__btn {
+    background-color: #fff;
+    border-radius: 3px;
+    border: 2px solid $grey-color;
+    color: $main-color;
+    margin: 1rem;
+    padding: 10px 30px;
+    font-family: $main-font;
+    font-weight: $bold;
+    font-size: $main-size;
+
+    &:hover {
+      cursor: pointer;
+      background-color: rgba(225, 225, 225, 0.5);
+    }
+  }
+}
