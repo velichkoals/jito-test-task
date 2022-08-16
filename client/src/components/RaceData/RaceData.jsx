@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRaceData, getWinner } from '../../store/selectors';
 import { scaleBand, scaleLinear, select } from 'd3';
@@ -11,25 +11,22 @@ export const RaceData = () => {
 	const winner = useSelector(getWinner);
 	const dispatch = useDispatch();
 	const svgRef = useRef();
-	const [data, setData] = useState(raceData);
 
 	useEffect(() => {
 		dispatch(getHorses());
 	}, []);
 
 	useEffect(() => {
-		setData(raceData);
-
 		const svg = select(svgRef.current);
 		const yScale = scaleBand()
 			.paddingInner(0.1)
-			.domain(data.map((item, index) => index))
+			.domain(raceData.map((item, index) => index))
 			.range([0, 200]);
 		const xScale = scaleLinear().domain([0, 500]).range([0, 500]);
 
 		svg
 			.selectAll('.bar')
-			.data(data, (entry) => entry.name)
+			.data(raceData, (entry) => entry.name)
 			.join('rect')
 			.attr('fill', (entry) => entry.color)
 			.attr('class', 'bar')
@@ -41,7 +38,7 @@ export const RaceData = () => {
 
 		svg
 			.selectAll('.label')
-			.data(data, (entry) => entry.name)
+			.data(raceData, (entry) => entry.name)
 			.join('text')
 			.text((entry) => `🏇${entry.name} (${entry.distance}m)`)
 			.attr('font-weight', 600)
@@ -54,9 +51,9 @@ export const RaceData = () => {
 
 	return (
 		<>
-			<svg className='race__data' ref={svgRef}></svg>
+			<svg className='race__data' data-testid='race-data' ref={svgRef}></svg>
 			{Object.keys(winner).length !== 0 ? (
-				<>
+				<div data-testid='winner-data'>
 					<div className='race__winner'>
 						<span style={{ color: `${winner.color}` }}>{winner.name}</span> won
 						the race!
@@ -67,7 +64,7 @@ export const RaceData = () => {
 					>
 						Restart race
 					</button>
-				</>
+				</div>
 			) : null}
 		</>
 	);
