@@ -1,50 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
-import io from 'socket.io-client';
 import { useDispatch, useSelector } from 'react-redux';
-import { getRaceData } from '../../store/selectors';
-import { getRaceDataAction } from '../../store/raceData/actionCreators';
+import { getRaceData, getWinner } from '../../store/selectors';
 import { scaleBand, scaleLinear, select } from 'd3';
-import { colors } from '../../helpers/colors';
+import { getHorses } from '../../store/raceData/thunk';
 
 import './RaceData.scss';
 
 export const RaceData = () => {
-	const socket = io.connect('http://localhost:3002');
 	const raceData = useSelector(getRaceData);
+	const winner = useSelector(getWinner);
 	const dispatch = useDispatch();
 	const svgRef = useRef();
-
 	const [data, setData] = useState(raceData);
-	const [winner, setWinner] = useState([]);
 
 	useEffect(() => {
-		socket.emit('start');
-		socket.on('ticker', (response) => {
-			const dataWithColor = [];
-
-			response.map((item, index) => {
-				const obj = {
-					name: item.name,
-					distance: item.distance,
-					color: colors[index],
-				};
-				dataWithColor.push(obj);
-
-				return obj;
-			});
-			const champion = dataWithColor.filter((item) => item.distance === 1000);
-
-			if (champion.length === 0) {
-				dispatch(
-					getRaceDataAction([
-						...dataWithColor.sort((a, b) => b.distance - a.distance),
-					])
-				);
-			} else if (champion.length === 1) {
-				setWinner(champion[0]);
-				socket.off('ticker');
-			}
-		});
+		dispatch(getHorses());
 	}, []);
 
 	useEffect(() => {
